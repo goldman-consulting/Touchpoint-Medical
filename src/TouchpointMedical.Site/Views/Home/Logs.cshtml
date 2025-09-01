@@ -1,0 +1,110 @@
+﻿@model TouchpointMedical.Site.Models.Home.LogListViewModel
+@{
+    ViewData["Title"] = "Logs";
+}
+<style>
+    .filters {
+        display: flex;
+        gap: 1rem;
+        align-items: end;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+    }
+
+        .filters label {
+            display: block;
+            font-size: .9rem;
+            color: #555;
+        }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th, .table td {
+            border-bottom: 1px solid #eee;
+            padding: .5rem .25rem;
+        }
+
+    .pagination {
+        margin-top: 1rem;
+    }
+
+        .pagination a {
+            margin-right: .25rem;
+        }
+</style>
+
+<h2>Log files</h2>
+
+<form method="get" asp-action="Logs" class="filters">
+    <input type="hidden" name="dir" value="@Model.RelativeDirectory" />
+    <div>
+        <label>File name contains</label>
+        <input name="name" value="@Model.Name" />
+    </div>
+    <div>
+        <label>From</label>
+        <input type="date" name="dateFrom" value="@(Model.DateFrom?.ToString("yyyy-MM-dd"))" />
+        <label>To</label>
+        <input type="date" name="dateTo" value="@(Model.DateTo?.ToString("yyyy-MM-dd"))" />
+    </div>
+    <div>
+        <label>Page size</label>
+        <input type="number" name="pageSize" min="5" max="200" value="@Model.PageSize" />
+    </div>
+    <button type="submit">Apply</button>
+</form>
+
+@if (!Model.Files.Any())
+{
+    <p>No files found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>File</th>
+            <th>Last Write</th>
+            <th>Size</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var f in Model.Files)
+        {
+            <tr>
+                <td>@f.FileName</td>
+                <td>@f.LastWrite.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@(string.Format("{0:N0} bytes", f.SizeBytes))</td>
+                <td>
+                    <a asp-action="ViewLog" asp-route-file="@f.FileName" asp-route-dir="@Model.RelativeDirectory">View</a> |
+                    <a asp-action="ViewLog" asp-route-file="@f.FileName" asp-route-dir="@Model.RelativeDirectory" asp-route-download="true">Download</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+        var pages = (int)Math.Ceiling((double)Model.Total / Model.PageSize);
+        if (pages < 1) { pages = 1; }
+    <nav class="pagination">
+        Page @Model.Page of @pages
+        <div>
+            @for (var p = 1; p <= pages; p++)
+            {
+                if (p == Model.Page)
+                {
+                    <strong>@p</strong>
+                }
+                else
+                {
+                    <a href="@Url.Action("Logs", new { dir = Model.RelativeDirectory, name = Model.Name, dateFrom = Model.DateFrom?.ToString("yyyy-MM-dd"), dateTo = Model.DateTo?.ToString("yyyy-MM-dd"), page = p, pageSize = Model.PageSize })">@p</a>
+                }
+                @: 
+            }
+        </div>
+    </nav>
+}

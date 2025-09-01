@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: TouchpointMedical.Site/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      valkey:
+        condition: service_healthy  # Wait for healthcheck to pass
+    networks:
+      - dev-network
+
+  valkey:
+    image: valkey/valkey:7.2
+    ports:
+      - "6379:6379"
+    container_name: dev-valkey
+    restart: unless-stopped
+    healthcheck:  # New: Tests if Valkey responds to PING
+        test: ["CMD", "valkey-cli", "--raw", "ping"]
+        interval: 5s
+        timeout: 3s
+        retries: 10
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge 

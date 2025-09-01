@@ -1,0 +1,73 @@
+﻿### .NET build outputs ###
+bin/
+obj/
+out/
+artifacts/
+
+# VS temporary files
+.vs/
+*.user
+*.suo
+
+# Rider / JetBrains
+.idea/
+
+# Build logs
+*.log
+
+### Configuration & Secrets ###
+# Don’t commit local settings
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json.user
+
+# Certificates / keys
+*.pfx
+*.pem
+*.key
+
+# Docker secrets
+**/docker-compose.override.yml
+.env
+.env.*
+
+### Data & Persistence ###
+# SQLite data (bind-mounted in container)
+App_Data/*
+!App_Data/*.md  # allow documentation
+!App_Data/.gitkeep
+
+# Valkey append-only persistence file
+appendonly.aof
+dump.rdb
+data/
+
+### Logs ###
+Logs/*
+!Logs/.gitkeep
+
+### OS / IDE noise ###
+.DS_Store
+Thumbs.db
+
+# Windows crash dumps
+*.stackdump
+*.dmp
+
+### Redis Commander viewer session ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### Container / Deployment ###
+# Local Docker build outputs
+docker-compose.dcproj.user
+*.iml
+*.pid
+*.seed
+*.bak
+*.swp
+
+# Image tar
+*.tar

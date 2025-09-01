@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchpointMedical.Site", "TouchpointMedical.Site\TouchpointMedical.Site.csproj", "{8C9E4B7A-1120-45D3-A03D-8ED231AC4E56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchpointMedical", "TouchpointMedical\TouchpointMedical.csproj", "{F2D7B9C3-2A4E-47B3-8129-16C3D90F7AB6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Documenation", "Project-Documenation", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Connections.md = Connections.md
+		StatusReport.md = StatusReport.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5D20AEC1-881B-4E3E-9FB0-FECD530C92C3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		TouchpointMedical.Site\aspnetapp.pfx = TouchpointMedical.Site\aspnetapp.pfx
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TouchpointMedical.Integration.PointClickCare", "TouchpointMedical.Integration.PointClickCare\TouchpointMedical.Integration.PointClickCare.csproj", "{EB64BEA9-8D9F-4B7B-B8E0-3A74F6E360CA}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose\docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C9E4B7A-1120-45D3-A03D-8ED231AC4E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C9E4B7A-1120-45D3-A03D-8ED231AC4E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C9E4B7A-1120-45D3-A03D-8ED231AC4E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C9E4B7A-1120-45D3-A03D-8ED231AC4E56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2D7B9C3-2A4E-47B3-8129-16C3D90F7AB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2D7B9C3-2A4E-47B3-8129-16C3D90F7AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2D7B9C3-2A4E-47B3-8129-16C3D90F7AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2D7B9C3-2A4E-47B3-8129-16C3D90F7AB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB64BEA9-8D9F-4B7B-B8E0-3A74F6E360CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB64BEA9-8D9F-4B7B-B8E0-3A74F6E360CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB64BEA9-8D9F-4B7B-B8E0-3A74F6E360CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB64BEA9-8D9F-4B7B-B8E0-3A74F6E360CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5068DD24-366D-4F5A-A050-EB27DD183890}
+	EndGlobalSection
+EndGlobal

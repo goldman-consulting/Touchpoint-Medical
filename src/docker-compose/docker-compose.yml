@@ -1,0 +1,42 @@
+name: touchpointmedical
+services:
+
+  valkey:
+    image: valkey/valkey:7-alpine
+    container_name: valkey
+    ports:
+      - "6379:6379"        # expose to host for non-container clients
+    volumes:
+      - valkey_data:/data  # persist data locally
+    command: ["valkey-server", "--appendonly", "yes"]
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:valkey:6379
+    ports:
+      - "8082:8081"   # open http://localhost:8082
+    depends_on:
+      - valkey
+      
+  touchpointmedical:
+    container_name: touchpointmedical
+    build:
+      context: ..
+      dockerfile: TouchpointMedical.Site/Dockerfile
+    depends_on:
+      - valkey
+    environment:
+      # Inside the compose network, reach Valkey by its *service name* at port 6379
+      - Cache__Endpoint=valkey:6379
+      # any other app settings you need, e.g. ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      # keep your SQLite path the same as your current Dockerfile expects
+      - ../TouchpointMedical.Site/App_Data:/app/App_Data
+
+volumes:
+  valkey_data:
