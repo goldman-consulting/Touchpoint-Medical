@@ -10,8 +10,9 @@ using TouchpointMedical.Http.Interfaces;
 namespace TouchpointMedical.Integration
 {
     public class TouchpointApiService(
+        FacilitySettingsFactory facilitySettingsFactory,
+        TouchpointApiTokenService tokenService,
         ILogger<TouchpointApiService> logger,
-        TouchpointApiTokenService tokenService, 
         IHttpClientFactory httpClientFactory) : 
         ApiServiceBase<TouchpointApiService>(
             httpClientFactory.CreateClient(nameof(TouchpointApiService)), 
@@ -19,6 +20,8 @@ namespace TouchpointMedical.Integration
             logger,
             new HttpClientOptions())
     {
+        private readonly FacilitySettingsFactory _facilitySettingsFactory = facilitySettingsFactory;
+
         private const string BaseUriFormat = 
             "https://{0}.touchpointmed.io/api/v1/{1}";
 
@@ -27,45 +30,47 @@ namespace TouchpointMedical.Integration
 
 
         public async Task<bool> Patient(
-            FacilitySettings facilitySettings, 
+            string pccFacilityKey,
             string eventGroup, string eventType, object payload)
         {
             _logger.LogTrace("{@PatientPayload}", payload);
 
             var result = await ApiPostCall(
-                facilitySettings, "patient", eventGroup, eventType, payload);
+                pccFacilityKey, "patient", eventGroup, eventType, payload);
 
             return result.IsSuccess;
         }
 
         public async Task<bool> Medication(
-            FacilitySettings facilitySettings, 
+            string pccFacilityKey, 
             string eventGroup, string eventType, object payload)
         {
             _logger.LogTrace("{@MedicationPayload}", payload);
 
             var result = await ApiPostCall(
-                facilitySettings, "medication", eventGroup, eventType, payload);
+                pccFacilityKey, "medication", eventGroup, eventType, payload);
 
             return result.IsSuccess;
         }
 
         public async Task<bool> Allergy(
-            FacilitySettings facilitySettings, 
+            string pccFacilityKey,
             string eventGroup, string eventType, object payload)
         {
             _logger.LogTrace("{@AllergyPayload}", payload);
 
             var result = await ApiPostCall(
-                facilitySettings, "allergy", eventGroup, eventType, payload);
+                pccFacilityKey, "allergy", eventGroup, eventType, payload);
 
             return result.IsSuccess;
         }
 
         private async Task<Result> ApiPostCall(
-            FacilitySettings facilitySettings,
+            string pccFacilityKey,
             string uriPath, string eventGroup, string eventType, object payload)
         {
+            var facilitySettings = _facilitySettingsFactory.Get(pccFacilityKey);
+
             var uri = BuildCallUri(facilitySettings, uriPath, eventGroup, eventType);
 
             var json = JsonConvert.SerializeObject(payload);

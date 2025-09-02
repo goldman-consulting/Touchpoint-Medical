@@ -1,7 +1,5 @@
 using Destructurama;
 
-using Microsoft.Extensions.Options;
-
 using Newtonsoft.Json;
 
 using Serilog;
@@ -26,8 +24,6 @@ builder.Logging.AddFilter("System.Net.Security", LogLevel.Debug);
 var baseDir = builder.Environment.ContentRootPath;
 AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(baseDir, "App_Data"));
 
-//builder.Services.AddWebhookListener(builder.Configuration);
-
 //Configure Touchpoint (TouchpointMedical)
 builder.Services.AddTouchpoint(builder.Configuration);
 
@@ -39,8 +35,6 @@ builder.Services.Configure<HostOptions>(o =>
     o.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
     o.ShutdownTimeout = TimeSpan.FromSeconds(10);
 });
-
-//builder.Logging.ClearProviders();
 
 // Configure Serilog
 builder.Host.UseSerilog((context, services, configuration) =>

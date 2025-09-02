@@ -17,7 +17,7 @@ namespace TouchpointMedical.Integration.PointClickCare.Extensions
                 OrgUuid = resident.OrgUuid,
                 FacilityId = resident.FacilityId.ToString(),
                 Id = resident.Id.ToString(),
-                MedicalRecordNumber = resident.MedicalRecordNumber ?? "not specified",
+                MedicalRecordNumber = resident.MedicalRecordNumber ?? resident.ExternalId ?? "UNKNOWN",
                 LastName = resident.LastName,
                 FirstName = resident.FirstName,
                 MiddleName = resident.MiddleName,
@@ -30,20 +30,20 @@ namespace TouchpointMedical.Integration.PointClickCare.Extensions
                     .Where(o => o.Type == "weight")
                     .Select(o => $"{o.Value} {o.Unit}").FirstOrDefault(),
                 PatientStatus = resident.Status,
-                ActionCode = "not specified",
-                ActionType = "not specified",
-                StandardActionType = "not specified",
-                EncounterId = resident.ExternalId ?? "not specified",
-                UnitDesc = resident.UnitDesc ?? "not specified",
-                UnitId = resident.UnitId?.ToString() ?? "not specified",
+                ActionCode = "UNKNOWN",
+                ActionType = "UNKNOWN",
+                StandardActionType = "UNKNOWN",
+                EncounterId = resident.ExternalId ?? "UNKNOWN",
+                UnitDesc = resident.UnitDesc ?? "UNKNOWN",
+                UnitId = resident.UnitId?.ToString() ?? "UNKNOWN",
                 IsCancelledRecord = false,
-                Origin = "not specified",
-                FloorDesc = resident.FloorDesc ?? "not specified",
-                FloorId = resident.FloorId?.ToString() ?? "not specified",
-                BedDesc = resident.BedDesc ?? "not specified",
-                BedId = resident.BedId?.ToString() ?? "not specified",
-                RoomDesc = resident.RoomDesc ?? "not specified",
-                RoomId = resident.RoomId?.ToString() ?? "not specified",
+                Origin = "UNKNOWN",
+                FloorDesc = resident.FloorDesc ?? "UNKNOWN",
+                FloorId = resident.FloorId?.ToString() ?? "UNKNOWN",
+                BedDesc = resident.BedDesc ?? "UNKNOWN",
+                BedId = resident.BedId?.ToString() ?? "UNKNOWN",
+                RoomDesc = resident.RoomDesc ?? "UNKNOWN",
+                RoomId = resident.RoomId?.ToString() ?? "UNKNOWN",
                 AdmissionDateTime = resident.AdmissionDate
             };
         }
@@ -58,7 +58,7 @@ namespace TouchpointMedical.Integration.PointClickCare.Extensions
                 OrgUuid = resident.OrgUuid,
                 FacilityId = resident.FacilityId.ToString(),
                 Id = adtRecord.Id.ToString(),
-                MedicalRecordNumber = resident.MedicalRecordNumber ?? "not specified",
+                MedicalRecordNumber = resident.MedicalRecordNumber ?? resident.ExternalId ?? "UNKNOWN",
                 LastName = resident.LastName,
                 FirstName = resident.FirstName,
                 MiddleName = resident.MiddleName,
@@ -96,8 +96,8 @@ namespace TouchpointMedical.Integration.PointClickCare.Extensions
                 Id = medication.Id.ToString(),
                 ResidentId = medication.ClientId.ToString(),
                 Status = medication.Status,
-                MedicationCode = medication.DdId.ToString(),
-                MedicationName = medication.Generic ?? "not specified",
+                MedicationCode = medication.DdId > 0 ? medication.DdId.ToString() : medication.DdId.ToString(),
+                MedicationName = medication.Generic ?? "UNKNOWN",
                 StartDate = medication.StartDate,
                 EndDate = medication.EndDate,
                 Route = medication.Administration.Route.Coding.FirstOrDefault()?.Display,
@@ -135,8 +135,8 @@ namespace TouchpointMedical.Integration.PointClickCare.Extensions
            return [.. allergy.Select(m => new tpmAllergy
            {
                Allergen = m.Allergen,
-               AllergenCode = m.AllergenCode?.Codings?.FirstOrDefault()?.Code ?? "not specified",
-               AllergenDisplay = m.AllergenCode?.Codings?.FirstOrDefault()?.Display ?? "not specified",
+               AllergenCode = m.AllergenCode?.Codings?.FirstOrDefault()?.Code ?? "UNKNOWN",
+               AllergenDisplay = m.AllergenCode?.Codings?.FirstOrDefault()?.Display ?? "UNKNOWN",
                OnsetDate = m.OnsetDate
            })];
 

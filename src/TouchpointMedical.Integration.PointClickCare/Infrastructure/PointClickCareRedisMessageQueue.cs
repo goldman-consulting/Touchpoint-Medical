@@ -1,20 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 
 using StackExchange.Redis;
 
-using TouchpointMedical.Infrastructure;
+using TouchpointMedical.Configuration;
 
 namespace TouchpointMedical.Integration.PointClickCare.Infrastructure
 {
     public class PointClickCareRedisMessageQueue(
-        IOptions<WebhookListenerOptions> webhookListenerOptions,
+        IOptions<TouchpointOptions> touchpointOptions,
         IConnectionMultiplexer redis)
     {
-        private readonly WebhookListenerOptions _webhookListenerOptions = webhookListenerOptions.Value;
+        private readonly TouchpointOptions _touchpointOptions = touchpointOptions.Value;
         private readonly IConnectionMultiplexer _redis = redis;
 
-        public async Task EnqueueMessageAsync(IWebhookMessage message)
+        public async Task EnqueueMessageAsync(PointClickCareWebhookMessage message)
         {
             if (message != null)
             {
@@ -22,27 +21,31 @@ namespace TouchpointMedical.Integration.PointClickCare.Infrastructure
 
                 var now = DateTimeOffset.UtcNow;
                 var nowMs = now.ToUnixTimeMilliseconds();
-                var ttl = TimeSpan.FromHours(_webhookListenerOptions.TimeToLiveHr);
-                var dueAt = now.AddMilliseconds(_webhookListenerOptions.WindowMs);
+                var ttl = TimeSpan.FromHours(_touchpointOptions.TimeToLiveHr);
+                var dueAt = now.AddMilliseconds(_touchpointOptions.WindowMs);
                 var dueAtMs = dueAt.ToUnixTimeMilliseconds();
 
                 _ = tran.StringSetAsync(
-                    $"{_webhookListenerOptions.KeyPrefix}:last:{message.MessageKey}", nowMs, expiry: ttl);
+                    $"{_touchpointOptions.KeyPrefix}:last:{message.MessageKey}", nowMs, expiry: ttl);
 
-                if (message is IWebhookMessageSet messageSet)
+                // 2) what changed
+                foreach (var t in message.Items)
                 {
-                    // 2) what changed
-                    foreach (var t in messageSet.Items)
-                    {
-                        var tMessage = $"{t.Key}:{t.Value ?? ""}";
+                    var tMessage = $"{t.Key}:{t.Value ?? ""}";
 
-                        _ = tran.SetAddAsync($"{_webhookListenerOptions.KeyPrefix}:types:{message.MessageKey}", tMessage);
-                        _ = tran.KeyExpireAsync($"{_webhookListenerOptions.KeyPrefix}:types:{message.MessageKey}", ttl);
-                    }
+                    _ = tran.SetAddAsync($"{_touchpointOptions.KeyPrefix}:types:{message.MessageKey}", tMessage);
+                    _ = tran.KeyExpireAsync($"{_touchpointOptions.KeyPrefix}:types:{message.MessageKey}", ttl);
                 }
 
+                if (_touchpointOptions.HttpClientOptions.CallLogging.HasAnyFlags(
+                    Logging.WebApiCallLoggingType.WebHookNotifications))
+                {
+                    _ = tran.SetAddAsync($"{_touchpointOptions.KeyPrefix}:webhooklog:{message.MessageKey}", $"{message.Type}:{message.ResourceIds.AsString()}");
+                }
+
+
                 // 3) (re)schedule this patient: due = now + window
-                _ = tran.SortedSetAddAsync($"{_webhookListenerOptions.KeyPrefix}:due", message.MessageKey, dueAtMs);
+                _ = tran.SortedSetAddAsync($"{_touchpointOptions.KeyPrefix}:due", message.MessageKey, dueAtMs);
 
                 //Commit transaction
                 await tran.ExecuteAsync();

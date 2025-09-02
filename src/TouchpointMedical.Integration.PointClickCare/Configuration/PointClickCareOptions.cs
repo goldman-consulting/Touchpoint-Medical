@@ -1,6 +1,4 @@
-﻿using TouchpointMedical.Logging;
-
-namespace TouchpointMedical.Integration.PointClickCare.Configuration
+﻿namespace TouchpointMedical.Integration.PointClickCare.Configuration
 {
     public class PointClickCareOptions
     {

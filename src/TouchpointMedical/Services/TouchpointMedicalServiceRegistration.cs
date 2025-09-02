@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 using StackExchange.Redis;
 
-using System.Security.Cryptography.X509Certificates;
-
-using TouchpointMedical.Infrastructure;
+using TouchpointMedical.Configuration;
 using TouchpointMedical.Integration;
 
 namespace TouchpointMedical.Services
@@ -17,7 +14,7 @@ namespace TouchpointMedical.Services
 
     public static class TouchpointMedicalServiceRegistration
     {
-        public static void AddTouchpoint(this IServiceCollection services, IConfiguration config)
+        public static void AddTouchpoint(this IServiceCollection services, ConfigurationManager config)
         {
             services.AddScoped<TouchpointApiTokenService>();
             services.AddScoped<TouchpointApiService>();
@@ -27,53 +24,64 @@ namespace TouchpointMedical.Services
                     new AuthRetryHandler(serviceProvider.GetRequiredService<TouchpointApiTokenService>()));
 
 
-            var configSection = config.GetSection("WebhookListener");
+            var configSection = config.GetSection("Touchpoint");
             if (configSection.Exists())
             {
-                services.Configure<WebhookListenerOptions>(configSection);
+                services.Configure<TouchpointOptions>(configSection);
 
-                var options = configSection.Get<WebhookListenerOptions>();
+                var options = configSection.Get<TouchpointOptions>();
 
-                if (options != null && !string.IsNullOrEmpty(options.Connection))
+                if (options != null)
                 {
-                    services.AddSingleton<IConnectionMultiplexer>(serviceProvider =>
+                    // Make path configurable, still default to App_Data
+                    var configuredPath = options.FacilitySettingsDataPath;
+
+                    config.AddJsonFile(configuredPath, optional: true, reloadOnChange: true);
+                    services.Configure<FacilitiesSettingsMap>(config);
+
+                    services.AddSingleton<FacilitySettingsFactory>();
+
+                    if (!string.IsNullOrEmpty(options.Connection))
                     {
-                        var logger = serviceProvider.GetRequiredService<ILogger<RedisConnectionFactory>>();
-
-                        //var multiplexerConfiguration = ConfigurationOptions.Parse(options.Connection);
-
-
-                        //return ConnectionMultiplexer.Connect(multiplexerConfiguration);
-
-                        for (int attempt = 1; attempt <= 5; attempt++)
+                        services.AddSingleton<IConnectionMultiplexer>(serviceProvider =>
                         {
-                            try
+                            var logger = serviceProvider.GetRequiredService<ILogger<RedisConnectionFactory>>();
+
+                            //var multiplexerConfiguration = ConfigurationOptions.Parse(options.Connection);
+
+
+                            //return ConnectionMultiplexer.Connect(multiplexerConfiguration);
+
+                            for (int attempt = 1; attempt <= 5; attempt++)
                             {
-                                var connection = ConnectionMultiplexer.Connect(options.Connection);
-                                if (connection.IsConnected)
+                                try
                                 {
-                                    return connection;
+                                    var connection = ConnectionMultiplexer.Connect(options.Connection);
+                                    if (connection.IsConnected)
+                                    {
+                                        return connection;
+                                    }
+
                                 }
+                                catch (RedisConnectionException ex)
+                                {
+                                    logger.LogWarning("Redis connection failed. {Attempt}", ex.Message);
 
+                                    Thread.Sleep(2000);
+                                }
                             }
-                            catch (RedisConnectionException ex)
-                            {
-                                logger.LogWarning("Redis connection failed. {Attempt}", ex.Message);
 
-                                Thread.Sleep(2000);
-                            }
-                        }
+                            logger.LogCritical("Failed to connect to Redis after multiple attempts.");
 
-                        logger.LogCritical("Failed to connect to Redis after multiple attempts.");
+                            throw new TouchpointServiceException("Failed to connect to Redis after multiple attempts.");
 
-                        throw new TouchpointServiceException("Failed to connect to Redis after multiple attempts.");
+                        });
 
-                    });
-
-                    services.AddStackExchangeRedisCache(co =>
-                    {
-                        co.Configuration = options.Connection;
-                    });
+                        services.AddStackExchangeRedisCache(co =>
+                        {
+                            co.Configuration = options.Connection;
+                        });
+                    }
                 }
             }
         }

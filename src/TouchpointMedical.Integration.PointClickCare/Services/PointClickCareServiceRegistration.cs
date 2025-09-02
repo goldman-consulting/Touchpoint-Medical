@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 using Serilog;
-using Serilog.Core;
 
-using System;
 using System.Security.Cryptography.X509Certificates;
 
-using TouchpointMedical.Auth;
 using TouchpointMedical.Integration.PointClickCare.Configuration;
 using TouchpointMedical.Integration.PointClickCare.Infrastructure;
 using TouchpointMedical.Integration.PointClickCare.Integration;

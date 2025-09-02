@@ -38,30 +38,36 @@ namespace TouchpointMedical.Integration.PointClickCare
 
         public override string ToString()
         {
-            return _keyType switch
+            return ToString(_keyType);
+        }
+
+        public string ToString(PointClickCareKeyType keyType)
+        {
+            return keyType switch
             {
                 PointClickCareKeyType.Organization => MakeFormattedKey(
-                    PointClickCareKeyType.Organization, 
+                    PointClickCareKeyType.Organization,
                     [_orgUuid]),
 
                 PointClickCareKeyType.Facility => MakeFormattedKey(
-                    PointClickCareKeyType.Facility, 
+                    PointClickCareKeyType.Facility,
                     [_orgUuid, _facilityId!]),
 
                 PointClickCareKeyType.Resident => MakeFormattedKey(
-                    PointClickCareKeyType.Resident, 
+                    PointClickCareKeyType.Resident,
                     [_orgUuid, _facilityId!, _residentId!]),
 
                 PointClickCareKeyType.ResidentContact => MakeFormattedKey(
-                    PointClickCareKeyType.ResidentContact, 
+                    PointClickCareKeyType.ResidentContact,
                     [_orgUuid, _facilityId!, _residentId!, _contactId!]),
 
                 _ => MakeFormattedKey(
-                    PointClickCareKeyType.NotSet, 
+                    PointClickCareKeyType.NotSet,
                     [_orgUuid, _facilityId, _residentId, _contactId]),
             };
         }
-        
+
+
         public static implicit operator PointClickCareKey(string pointClickCareKey)
         {
             return FromKey(pointClickCareKey);

@@ -28,5 +28,22 @@ namespace TouchpointMedical
         {
             return !string.IsNullOrEmpty(value);
         }
+
+        public static string AsString(this List<string> items)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var item in items)
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append(",");
+                }
+
+                sb.Append(item);
+            }
+
+            return sb.ToString();
+        }
     }
 }

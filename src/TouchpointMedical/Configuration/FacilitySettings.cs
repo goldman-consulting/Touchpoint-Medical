@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 using TouchpointMedical.Http.Interfaces;
+using TouchpointMedical.Logging;
 
 namespace TouchpointMedical.Configuration
 {
@@ -16,9 +17,11 @@ namespace TouchpointMedical.Configuration
         public required string AppName { get; init; }
 
         [JsonProperty("appKey")]
+        [TouchpointLogMasked]
         public required string AppKey { get; init; }
 
         [JsonProperty("appKeySecret")]
+        [TouchpointLogMasked]
         public required string AppKeySecret { get; init; }
 
         public string InstanceKey => Name;
