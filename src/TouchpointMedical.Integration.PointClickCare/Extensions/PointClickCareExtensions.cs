@@ -66,10 +66,10 @@ namespace TouchpointMedical.Integration.PointClickCare.Extensions
                 Gender = resident.Gender,
                 Height = observations
                     .Where(o=>o.Type == "height")
-                    .Select(o=>$"{o.Value} {o.Unit}").First(),
+                    .Select(o=>$"{o.Value} {o.Unit}").FirstOrDefault(),
                 Weight = observations
                     .Where(o => o.Type == "weight")
-                    .Select(o => $"{o.Value} {o.Unit}").First(),
+                    .Select(o => $"{o.Value} {o.Unit}").FirstOrDefault(),
                 PatientStatus = resident.Status,
                 ActionCode = adtRecord.ActionCode,
                 ActionType = adtRecord.ActionType,
